@@ -1,4 +1,3 @@
-# db.py
 import sqlite3
 
 def init_db():
@@ -9,8 +8,6 @@ def init_db():
             date TEXT,
             symbol TEXT,
             qty INTEGER,
-            buy_price REAL,
-            sell_price REAL,
             pnl REAL,
             timestamp TEXT
         )
@@ -20,7 +17,7 @@ def init_db():
 
 def insert_trade(conn, trade):
     conn.execute(
-        "INSERT INTO trades (date, symbol, qty, buy_price, sell_price, pnl, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        "INSERT INTO trades (date, symbol, qty, pnl, timestamp) VALUES (?, ?, ?, ?, ?)",
         trade
     )
     conn.commit()
@@ -30,3 +27,7 @@ def get_all_trades(conn):
 
 def get_trades_by_date(conn, date):
     return conn.execute("SELECT * FROM trades WHERE date = ?", (date,)).fetchall()
+
+def delete_all_trades(conn):
+    conn.execute("DELETE FROM trades")
+    conn.commit()
