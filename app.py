@@ -80,3 +80,33 @@ if not summary.empty:
     for row, week in enumerate(weeks):
         for col, day in enumerate(week):
             if day == 0:
+                continue
+            pnl = pnl_map.get(day, 0)
+            trades_count = trade_map.get(day, 0)
+            color = "#d4f4dd" if pnl > 0 else "#f4d4d4" if pnl < 0 else "#e0e0e0"
+
+            ax.add_patch(plt.Rectangle((col, -row), 1, 1, color=color, edgecolor='gray'))
+
+            # ✅ Big, Bold Text
+            ax.text(col + 0.1, -row + 0.9, f"{day}", ha='left', va='top', fontsize=18, fontweight='bold', color='black')
+            ax.text(col + 0.5, -row + 0.5, f"${pnl:.2f}", ha='center', va='center', fontsize=16, fontweight='bold', color='black')
+
+    ax.set_title(f"{calendar.month_name[month]} {year} Trade Calendar", fontsize=20, weight='bold')
+    legend_items = [
+        mpatches.Patch(color="#d4f4dd", label='Profit Day'),
+        mpatches.Patch(color="#f4d4d4", label='Loss Day'),
+        mpatches.Patch(color="#e0e0e0", label='No Trades'),
+    ]
+    ax.legend(handles=legend_items, loc='lower center', bbox_to_anchor=(0.5, -0.1), ncol=3)
+    plt.tight_layout()
+    st.pyplot(fig)
+
+# 📋 Detail View
+st.subheader("📋 View Trade Details")
+selected_date = st.date_input("Select a date to view trades")
+trades_for_day = trades[trades["Date"].dt.date == selected_date]
+if not trades_for_day.empty:
+    st.markdown(f"### Trades for {selected_date}")
+    st.dataframe(trades_for_day)
+else:
+    st.info("No trades for this date.")
